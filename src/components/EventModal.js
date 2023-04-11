@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Label from "@radix-ui/react-label";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+
+const inputStyle =
+  "w-full h-10 px-3 bg-gray-800 border border-gray-700 rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white";
 
 const EventModal = ({
   showEventModal,
   setShowEventModal,
   handleSubmit,
+  handleDelete,
   handleInputChange,
   formData,
   roomOptions,
@@ -19,6 +23,10 @@ const EventModal = ({
   const [statusTriggerText, setStatusTriggerText] = useState(
     formData.status || `Select a status`
   );
+  useEffect(() => {
+    setRoomTriggerText(formData.room || "Select a room");
+    setStatusTriggerText(formData.status || "Select a status");
+  }, [formData]);
 
   const renderSelect = (name, options, triggerText, setTriggerText) => (
     <DropdownMenu.Root>
@@ -51,7 +59,7 @@ const EventModal = ({
     <Dialog.Root open={showEventModal} onClose={() => setShowEventModal(false)}>
       <Dialog.Overlay className="fixed z-10 inset-0 bg-black opacity-50" />
       <Dialog.Content
-        className="fixed z-20 inset-x-0 top-1/2 transform -translate-y-1/2 bg-white p-8 w-full max-w-md mx-auto rounded shadow-lg"
+        className="fixed z-20 inset-x-0 top-1/2 transform -translate-y-1/2 bg-black p-8 w-full max-w-md mx-auto rounded shadow-lg"
         as="form"
       >
         <h2 className="text-xl mb-4">
@@ -64,7 +72,7 @@ const EventModal = ({
             name="date"
             value={formData.date}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -76,7 +84,7 @@ const EventModal = ({
             name="startTime"
             value={formData.startTime}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -88,7 +96,7 @@ const EventModal = ({
             name="endTime"
             value={formData.endTime}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -100,7 +108,7 @@ const EventModal = ({
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -120,7 +128,7 @@ const EventModal = ({
             name="technicalSpecifications"
             value={formData.technicalSpecifications}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -131,7 +139,7 @@ const EventModal = ({
             name="accessibilityInfo"
             value={formData.accessibilityInfo}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -143,7 +151,7 @@ const EventModal = ({
             name="ticketLink"
             value={formData.ticketLink}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -154,7 +162,7 @@ const EventModal = ({
             name="description"
             value={formData.description}
             onChange={handleInputChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className={inputStyle}
           />
         </div>
         <div className="mb-4">
@@ -177,6 +185,16 @@ const EventModal = ({
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Save
+        </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            handleDelete(formData.id);
+          }}
+          className="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Delete
         </button>
       </Dialog.Content>
     </Dialog.Root>

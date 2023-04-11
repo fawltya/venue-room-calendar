@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { startOfWeek, addDays, format } from "date-fns";
 import EventModal from "./EventModal";
+import { app, database } from "../firebase";
+import { ref, onValue, set, remove, push } from "firebase/database";
 
 const roomOptions = ["Court Room", "The Open Arms", "The Drawing Room"];
 const statusOptions = ["Confirmed", "Hold", "Cancelled"];
@@ -24,23 +26,21 @@ const Calendar = () => {
 
   const firstRender = useRef(true);
 
-  // Load events from localStorage
   useEffect(() => {
-    const storedEvents = localStorage.getItem("events");
-    if (storedEvents) {
-      setEvents(JSON.parse(storedEvents));
-    } else {
-      setEvents([]);
-    }
-  }, []);
+    const eventsRef = ref(database, "events");
+    const unsubscribe = onValue(eventsRef, (snapshot) => {
+      const storedEvents = snapshot.val();
+      if (storedEvents) {
+        setEvents(Object.values(storedEvents));
+      } else {
+        setEvents([]);
+      }
+    });
 
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-    } else {
-      localStorage.setItem("events", JSON.stringify(events));
-    }
-  }, [events]);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,34 +51,22 @@ const Calendar = () => {
     e.preventDefault();
     const startTime = new Date(`${formData.date}T${formData.startTime}`);
     const endTime = new Date(`${formData.date}T${formData.endTime}`);
+    const eventData = { ...formData, startTime, endTime };
 
     if (editMode) {
-      const updatedEvents = [...events];
-      updatedEvents[selectedEventIndex] = { ...formData, startTime, endTime };
-      setEvents(updatedEvents);
-      setEditMode(false);
-      setSelectedEventIndex(null);
+      const eventRef = ref(database, `events/${selectedEventIndex}`);
+      set(eventRef, eventData);
     } else {
-      setEvents([...events, { ...formData, startTime, endTime }]);
+      const newEventRef = push(ref(database, "events"));
+      set(newEventRef, eventData);
     }
 
-    setFormData({
-      date: "",
-      startTime: "",
-      endTime: "",
-      name: "",
-      room: "",
-      technicalSpecifications: "",
-      accessibilityInfo: "",
-      ticketLink: "",
-      description: "",
-      status: "",
-    });
+    // resetFormData();
     setShowEventModal(false);
   };
 
   const handleEventClick = (event, index) => {
-    setSelectedEventIndex(index);
+    setSelectedEventIndex(Object.keys(events)[index]);
     setFormData({
       ...event,
       date: format(new Date(event.startTime), "yyyy-MM-dd"),
@@ -87,6 +75,27 @@ const Calendar = () => {
     });
     setEditMode(true);
     setShowEventModal(true);
+  };
+
+  const handleDelete = () => {
+    if (selectedEventIndex !== null) {
+      const eventRef = ref(database, `events/${selectedEventIndex}`);
+      remove(eventRef);
+      setSelectedEventIndex(null);
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Confirmed":
+        return "bg-green-500";
+      case "Hold":
+        return "bg-orange-500";
+      case "Cancelled":
+        return "bg-red-500";
+      default:
+        return "";
+    }
   };
 
   const renderEvents = (day, room) => {
@@ -100,7 +109,9 @@ const Calendar = () => {
       <div
         key={index}
         onClick={() => handleEventClick(event, index)}
-        className="border border-gray-200 p-1 mb-1 cursor-pointer"
+        className={`border border-gray-200 p-1 mb-1 cursor-pointer ${getStatusClass(
+          event.status
+        )}`}
       >
         {format(new Date(event.startTime), "HH:mm")} -{" "}
         {format(new Date(event.endTime), "HH:mm")} <strong>{event.name}</strong>
@@ -162,6 +173,7 @@ const Calendar = () => {
         roomOptions={roomOptions}
         statusOptions={statusOptions}
         editMode={editMode}
+        handleDelete={handleDelete}
       />
 
       {renderCalendar()}
