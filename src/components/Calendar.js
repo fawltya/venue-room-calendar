@@ -19,6 +19,7 @@ const Calendar = () => {
   const [showEventModal, setShowEventModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedEventIndex, setSelectedEventIndex] = useState(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [formData, setFormData] = useState({
     startTime: "",
     endTime: "",
@@ -163,7 +164,7 @@ const Calendar = () => {
   const renderEvents = (day, room) => {
     const filteredEvents = events.filter((event) => {
       const eventDate = new Date(event.startTime);
-      const targetDate = new Date(day);
+      const targetDate = startOfDay(new Date(day));
       return (
         event.startTime &&
         isSameDay(eventDate, targetDate) &&
@@ -187,8 +188,8 @@ const Calendar = () => {
   };
 
   const renderCalendar = () => {
-    const start = startOfWeek(new Date(), { weekStartsOn: 1 });
-    const days = Array.from({ length: 7 }, (_, index) =>
+    const start = startOfWeek(currentDate, { weekStartsOn: 1 });
+    const days = Array.from({ length: 14 }, (_, index) =>
       format(addDays(start, index), "yyyy-MM-dd")
     );
 
@@ -207,7 +208,9 @@ const Calendar = () => {
         <tbody>
           {days.map((day, index) => (
             <tr key={index}>
-              <td className="border border-gray-200 p-2">{day}</td>
+              <td className="border border-gray-200 p-2">
+                {format(new Date(day), "EEE dd/MM/yy")}
+              </td>
               {roomOptions.map((room, index) => (
                 <td key={index} className="border border-gray-200 p-2">
                   {renderEvents(day, room)}
@@ -222,6 +225,19 @@ const Calendar = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <button
+        onClick={() => setCurrentDate((prevDate) => addDays(prevDate, -14))}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
+      >
+        Previous 2 Weeks
+      </button>
+      <button
+        onClick={() => setCurrentDate((prevDate) => addDays(prevDate, 14))}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
+      >
+        Next 2 Weeks
+      </button>
+
       <button
         onClick={() => {
           setShowEventModal(true);
