@@ -22,6 +22,7 @@ const Calendar = () => {
   const [formData, setFormData] = useState({
     startTime: "",
     endTime: "",
+    doorsTime: "",
     name: "",
     room: "",
     technicalSpecifications: "",
