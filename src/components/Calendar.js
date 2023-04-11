@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { startOfWeek, addDays, format } from "date-fns";
+import {
+  startOfWeek,
+  addDays,
+  format,
+  isEqual,
+  startOfDay,
+  isSameDay,
+} from "date-fns";
 import EventModal from "./EventModal";
 import { app, database } from "../firebase";
 import { ref, onValue, set, remove, push } from "firebase/database";
@@ -32,7 +39,12 @@ const Calendar = () => {
       const storedEvents = snapshot.val();
       if (storedEvents) {
         const eventsArray = Object.entries(storedEvents).map(([id, event]) => {
-          return { id, ...event };
+          return {
+            id,
+            ...event,
+            startTime: new Date(event.startTime),
+            endTime: new Date(event.endTime),
+          };
         });
         setEvents(eventsArray);
         console.log("Events:", eventsArray);
@@ -55,21 +67,31 @@ const Calendar = () => {
     e.preventDefault();
     const startTime = new Date(`${formData.date}T${formData.startTime}`);
     const endTime = new Date(`${formData.date}T${formData.endTime}`);
-    const eventData = { ...formData, startTime, endTime };
+    const eventData = {
+      ...formData,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+    };
 
     if (editMode) {
       const eventRef = ref(database, `events/${selectedEventIndex}`);
       set(eventRef, eventData, () => {
         setEvents((prevEvents) => {
           const updatedEvents = [...prevEvents];
-          updatedEvents[selectedEventIndex] = eventData;
+          const index = updatedEvents.findIndex(
+            (event) => event.id === selectedEventIndex
+          );
+          updatedEvents[index] = eventData;
           return updatedEvents;
         });
       });
     } else {
       const newEventRef = push(ref(database, "events"));
       set(newEventRef, eventData, () => {
-        setEvents((prevEvents) => [...prevEvents, eventData]);
+        setEvents((prevEvents) => [
+          ...prevEvents,
+          { id: newEventRef.key, ...eventData },
+        ]);
       });
     }
 
@@ -89,7 +111,7 @@ const Calendar = () => {
   };
 
   const handleEventClick = (event, index) => {
-    setSelectedEventIndex(Object.keys(events)[index]);
+    setSelectedEventIndex(event.id);
     setFormData({
       ...event,
       date: format(new Date(event.startTime), "yyyy-MM-dd"),
@@ -122,20 +144,19 @@ const Calendar = () => {
   };
 
   const renderEvents = (day, room) => {
-    const filteredEvents = events.filter(
-      (event) =>
+    const filteredEvents = events.filter((event) => {
+      const eventDate = new Date(event.startTime);
+      const targetDate = new Date(day);
+      return (
         event.startTime &&
-        format(new Date(event.startTime), "yyyy-MM-dd") === day &&
+        isSameDay(eventDate, targetDate) &&
         event.room === room
-    );
-
-    console.log("day", day);
-    console.log("room", room);
-    console.log("filteredEvents", filteredEvents);
+      );
+    });
 
     return filteredEvents.map((event, index) => (
       <div
-        key={index}
+        key={event.id}
         onClick={() => handleEventClick(event, index)}
         className={`border border-gray-200 p-1 mb-1 cursor-pointer ${getStatusClass(
           event.status

@@ -59,143 +59,171 @@ const EventModal = ({
     <Dialog.Root open={showEventModal} onClose={() => setShowEventModal(false)}>
       <Dialog.Overlay className="fixed z-10 inset-0 bg-black opacity-50" />
       <Dialog.Content
-        className="fixed z-20 inset-x-0 top-1/2 transform -translate-y-1/2 bg-black p-8 w-full max-w-md mx-auto rounded shadow-lg"
+        className="fixed z-20 inset-x-0 top-1/2 transform -translate-y-1/2 bg-black p-8 w-3/4 mx-auto rounded shadow-lg"
         as="form"
       >
-        <h2 className="text-xl mb-4">
-          {editMode ? "Edit Event" : "Add Event"}
-        </h2>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">Date</Label.Root>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
+        <div className="flex justify-between items-start">
+          <h2 className="text-xl mb-4">
+            {editMode ? "Edit Event" : "Add Event"}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setShowEventModal(false)}
+            className="focus:outline-none"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 15 15"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12.8536 2.85355C13.0488 2.65829 13.0488 2.34171 12.8536 2.14645C12.6583 1.95118 12.3417 1.95118 12.1464 2.14645L7.5 6.79289L2.85355 2.14645C2.65829 1.95118 2.34171 1.95118 2.14645 2.14645C1.95118 2.34171 1.95118 2.65829 2.14645 2.85355L6.79289 7.5L2.14645 12.1464C1.95118 12.3417 1.95118 12.6583 2.14645 12.8536C2.34171 13.0488 2.65829 13.0488 2.85355 12.8536L7.5 8.20711L12.1464 12.8536C12.3417 13.0488 12.6583 13.0488 12.8536 12.8536C13.0488 12.6583 13.0488 12.3417 12.8536 12.1464L8.20711 7.5L12.8536 2.85355Z"
+                fill="currentColor"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
         </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Start Time
-          </Label.Root>
-          <input
-            type="time"
-            name="startTime"
-            value={formData.startTime}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Date
+            </Label.Root>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Start Time
+            </Label.Root>
+            <input
+              type="time"
+              name="startTime"
+              value={formData.startTime}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              End Time
+            </Label.Root>
+            <input
+              type="time"
+              name="endTime"
+              value={formData.endTime}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Event Name
+            </Label.Root>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Room
+            </Label.Root>
+            {renderSelect(
+              "room",
+              roomOptions,
+              roomTriggerText,
+              setRoomTriggerText
+            )}
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Technical Specifications
+            </Label.Root>
+            <textarea
+              name="technicalSpecifications"
+              value={formData.technicalSpecifications}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Accessibility Info
+            </Label.Root>
+            <textarea
+              name="accessibilityInfo"
+              value={formData.accessibilityInfo}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Ticket Link
+            </Label.Root>
+            <input
+              type="url"
+              name="ticketLink"
+              value={formData.ticketLink}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Event Description
+            </Label.Root>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className={inputStyle}
+            />
+          </div>
+          <div className="mb-4">
+            <Label.Root className="block text-sm font-bold mb-2">
+              Status
+            </Label.Root>
+            {renderSelect(
+              "status",
+              statusOptions,
+              statusTriggerText,
+              setStatusTriggerText
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              handleSubmit(event);
+            }}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              handleDelete(formData.id);
+            }}
+            className="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Delete
+          </button>
         </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            End Time
-          </Label.Root>
-          <input
-            type="time"
-            name="endTime"
-            value={formData.endTime}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Event Name
-          </Label.Root>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">Room</Label.Root>
-          {renderSelect(
-            "room",
-            roomOptions,
-            roomTriggerText,
-            setRoomTriggerText
-          )}
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Technical Specifications
-          </Label.Root>
-          <textarea
-            name="technicalSpecifications"
-            value={formData.technicalSpecifications}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Accessibility Info
-          </Label.Root>
-          <textarea
-            name="accessibilityInfo"
-            value={formData.accessibilityInfo}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Ticket Link
-          </Label.Root>
-          <input
-            type="url"
-            name="ticketLink"
-            value={formData.ticketLink}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Event Description
-          </Label.Root>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            className={inputStyle}
-          />
-        </div>
-        <div className="mb-4">
-          <Label.Root className="block text-sm font-bold mb-2">
-            Status
-          </Label.Root>
-          {renderSelect(
-            "status",
-            statusOptions,
-            statusTriggerText,
-            setStatusTriggerText
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            handleSubmit(event);
-          }}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            handleDelete(formData.id);
-          }}
-          className="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Delete
-        </button>
       </Dialog.Content>
     </Dialog.Root>
   );
