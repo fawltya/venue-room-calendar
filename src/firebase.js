@@ -19,7 +19,7 @@ const firebaseConfig = {
     "https://venue-room-calendar-default-rtdb.europe-west1.firebasedatabase.app",
 };
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig, "third");
 
 const database = getDatabase(app);
 
