@@ -11,6 +11,7 @@ const EventModal = ({
   setShowEventModal,
   handleSubmit,
   handleDelete,
+  handleDuplicate,
   handleInputChange,
   formData,
   roomOptions,
@@ -213,6 +214,17 @@ const EventModal = ({
           >
             Save
           </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              handleDuplicate(formData.id);
+            }}
+            className="ml-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Duplicate
+          </button>
+
           <button
             type="button"
             onClick={(event) => {

@@ -130,6 +130,22 @@ const Calendar = () => {
     }
   };
 
+  const handleDuplicate = (eventId) => {
+    const eventToDuplicate = events.find((event) => event.id === eventId);
+    if (eventToDuplicate) {
+      const newEventRef = push(ref(database, "events"));
+      const newEvent = {
+        ...eventToDuplicate,
+        id: newEventRef.key,
+        startTime: new Date(eventToDuplicate.startTime).toISOString(),
+        endTime: new Date(eventToDuplicate.endTime).toISOString(),
+      };
+      set(newEventRef, newEvent, () => {
+        setEvents([...events, newEvent]);
+      });
+    }
+  };
+
   const getStatusClass = (status) => {
     switch (status) {
       case "Confirmed":
@@ -224,6 +240,7 @@ const Calendar = () => {
         statusOptions={statusOptions}
         editMode={editMode}
         handleDelete={handleDelete}
+        handleDuplicate={handleDuplicate}
       />
 
       {renderCalendar()}
