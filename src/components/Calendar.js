@@ -101,6 +101,7 @@ const Calendar = () => {
   const renderEvents = (day, room) => {
     const filteredEvents = events.filter(
       (event) =>
+        event.startTime && // add null check for startTime
         format(new Date(event.startTime), "yyyy-MM-dd") === day &&
         event.room === room
     );
@@ -113,8 +114,9 @@ const Calendar = () => {
           event.status
         )}`}
       >
-        {format(new Date(event.startTime), "HH:mm")} -{" "}
-        {format(new Date(event.endTime), "HH:mm")} <strong>{event.name}</strong>
+        {event.startTime && format(new Date(event.startTime), "HH:mm")} -{" "}
+        {event.endTime && format(new Date(event.endTime), "HH:mm")}{" "}
+        <strong>{event.name}</strong>
       </div>
     ));
   };
