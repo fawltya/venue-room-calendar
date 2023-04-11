@@ -31,7 +31,11 @@ const Calendar = () => {
     const unsubscribe = onValue(eventsRef, (snapshot) => {
       const storedEvents = snapshot.val();
       if (storedEvents) {
-        setEvents(Object.values(storedEvents));
+        const eventsArray = Object.entries(storedEvents).map(([id, event]) => {
+          return { id, ...event };
+        });
+        setEvents(eventsArray);
+        console.log("Events:", eventsArray);
       } else {
         setEvents([]);
       }
@@ -55,13 +59,32 @@ const Calendar = () => {
 
     if (editMode) {
       const eventRef = ref(database, `events/${selectedEventIndex}`);
-      set(eventRef, eventData);
+      set(eventRef, eventData, () => {
+        setEvents((prevEvents) => {
+          const updatedEvents = [...prevEvents];
+          updatedEvents[selectedEventIndex] = eventData;
+          return updatedEvents;
+        });
+      });
     } else {
       const newEventRef = push(ref(database, "events"));
-      set(newEventRef, eventData);
+      set(newEventRef, eventData, () => {
+        setEvents((prevEvents) => [...prevEvents, eventData]);
+      });
     }
 
-    // resetFormData();
+    setFormData({
+      startTime: "",
+      endTime: "",
+      name: "",
+      room: "",
+      technicalSpecifications: "",
+      accessibilityInfo: "",
+      ticketLink: "",
+      description: "",
+      status: "",
+    });
+
     setShowEventModal(false);
   };
 
@@ -101,10 +124,14 @@ const Calendar = () => {
   const renderEvents = (day, room) => {
     const filteredEvents = events.filter(
       (event) =>
-        event.startTime && // add null check for startTime
+        event.startTime &&
         format(new Date(event.startTime), "yyyy-MM-dd") === day &&
         event.room === room
     );
+
+    console.log("day", day);
+    console.log("room", room);
+    console.log("filteredEvents", filteredEvents);
 
     return filteredEvents.map((event, index) => (
       <div
