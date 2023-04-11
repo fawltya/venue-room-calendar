@@ -16,10 +16,10 @@ const firebaseConfig = {
   appId: "1:801152282682:web:365128d696fc52212ac503",
   measurementId: "G-4QN1XFGB2R",
   databaseURL:
-    "https://venue-room-calendar-default-rtdb.europe-west1.firebaseio.com",
+    "https://venue-room-calendar-default-rtdb.europe-west1.firebasedatabase.app",
 };
 
-const app = initializeApp(firebaseConfig, "secondary");
+const app = initializeApp(firebaseConfig);
 
 const database = getDatabase(app);
 
