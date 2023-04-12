@@ -1,12 +1,7 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getAuth, EmailAuthProvider } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCLBpWHQHCZdEXA9BQwueRek0R_K5NwmW4",
   authDomain: "venue-room-calendar.firebaseapp.com",
@@ -19,8 +14,7 @@ const firebaseConfig = {
     "https://venue-room-calendar-default-rtdb.europe-west1.firebasedatabase.app",
 };
 
-const app = initializeApp(firebaseConfig, "third");
-
+const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-export { app, database };
+export { app, EmailAuthProvider, database }; // Export EmailAuthProvider
