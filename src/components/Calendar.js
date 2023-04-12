@@ -212,7 +212,30 @@ const Calendar = () => {
                 {format(new Date(day), "EEE dd/MM/yy")}
               </td>
               {roomOptions.map((room, index) => (
-                <td key={index} className="border border-gray-200 p-2">
+                <td
+                  key={index}
+                  className="border border-gray-200 p-2"
+                  data-empty="true"
+                  onClick={(e) => {
+                    if (e.target.getAttribute("data-empty") === "true") {
+                      setFormData({
+                        startTime: "",
+                        endTime: "",
+                        doorsTime: "",
+                        name: "",
+                        room: room,
+                        technicalSpecifications: "",
+                        accessibilityInfo: "",
+                        ticketLink: "",
+                        description: "",
+                        status: "",
+                        date: day,
+                      });
+                      setShowEventModal(true);
+                      setEditMode(false);
+                    }
+                  }}
+                >
                   {renderEvents(day, room)}
                 </td>
               ))}
@@ -224,29 +247,12 @@ const Calendar = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <button
-        onClick={() => setCurrentDate((prevDate) => addDays(prevDate, -14))}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-      >
-        Previous 2 Weeks
-      </button>
-      <button
-        onClick={() => setCurrentDate((prevDate) => addDays(prevDate, 14))}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-      >
-        Next 2 Weeks
-      </button>
-
-      <button
-        onClick={() => {
-          setShowEventModal(true);
-          setEditMode(false);
-        }}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        Add Event
-      </button>
+    <div className="container mx-auto p-4 flex flex-col mt-10">
+      <div className="flex justify-center my-6">
+        <h1 className="text-3xl font-extrabold uppercase">
+          The Court House events
+        </h1>
+      </div>
       <EventModal
         showEventModal={showEventModal}
         setShowEventModal={setShowEventModal}
@@ -261,6 +267,30 @@ const Calendar = () => {
       />
 
       {renderCalendar()}
+      <div className="flex justify-between my-6">
+        <button
+          onClick={() => setCurrentDate((prevDate) => addDays(prevDate, -14))}
+          className="bg-slate-900 hover:bg-slate-700 text-white font-bold w-1/5 rounded py-3 px-4 focus:outline-none focus:shadow-outline"
+        >
+          Previous 2 Weeks
+        </button>
+
+        <button
+          onClick={() => {
+            setShowEventModal(true);
+            setEditMode(false);
+          }}
+          className=" bg-emerald-900 hover:bg-emerald-700 text-white w-2/5  font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Add Event
+        </button>
+        <button
+          onClick={() => setCurrentDate((prevDate) => addDays(prevDate, 14))}
+          className="bg-slate-900 hover:bg-slate-700 text-white font-bold w-1/5 rounded py-3 px-4 focus:outline-none focus:shadow-outline"
+        >
+          Next 2 Weeks
+        </button>
+      </div>
     </div>
   );
 };
