@@ -10,6 +10,8 @@ import {
 import EventModal from "./EventModal";
 import { app, database } from "../firebase";
 import { ref, onValue, set, remove, push } from "firebase/database";
+import MonthlyCalendar from "./MonthlyCalendar";
+import { Toggle } from "@radix-ui/react-toggle";
 
 const roomOptions = ["Court Room", "The Open Arms", "The Drawing Room"];
 const statusOptions = ["Confirmed", "Hold", "Cancelled"];
@@ -20,6 +22,7 @@ const Calendar = () => {
   const [editMode, setEditMode] = useState(false);
   const [selectedEventIndex, setSelectedEventIndex] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [calendarView, setCalendarView] = useState("weekly"); // Add this line
   const [formData, setFormData] = useState({
     startTime: "",
     endTime: "",
@@ -34,6 +37,12 @@ const Calendar = () => {
   });
 
   const firstRender = useRef(true);
+
+  const toggleCalendarView = () => {
+    setCalendarView((prevView) =>
+      prevView === "weekly" ? "monthly" : "weekly"
+    );
+  };
 
   useEffect(() => {
     const eventsRef = ref(database, "events");
@@ -265,8 +274,8 @@ const Calendar = () => {
         handleDelete={handleDelete}
         handleDuplicate={handleDuplicate}
       />
-
       {renderCalendar()}
+
       <div className="flex justify-between my-6">
         <button
           onClick={() => setCurrentDate((prevDate) => addDays(prevDate, -14))}
